@@ -1,0 +1,19 @@
+DELIMITER //
+CREATE TRIGGER actualizar_calificacion AFTER UPDATE ON tb_suscripcion
+FOR EACH ROW BEGIN
+	DECLARE promedio DECIMAL(2.1);
+    DECLARE contador INT(10);
+    
+	SELECT 
+    (SUM(calificacion) / COUNT(usuario)), COUNT(usuario) 
+    INTO promedio, contador
+    FROM tb_suscripcion
+    WHERE curso = NEW.curso 
+    AND calificacion IS NOT NULL;
+    
+	UPDATE tb_curso 
+    SET calificacion = promedio, contador = contador 
+    WHERE ID = NEW.curso;
+    
+END//
+DELIMITER ;
